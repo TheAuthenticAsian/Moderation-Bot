@@ -10,6 +10,6 @@ async def send_embed(ctx, name, field_table, color=discord.Colour.blue(), descri
             embed.add_field(
                 name=field, value=field_dict[field], inline=False)
 
-    embed.set_footer(text="Masa is ~short~")
+    embed.set_footer(text='"Masa is ~short~" - ChilledFrost')
 
     await ctx.send(embed=embed)
