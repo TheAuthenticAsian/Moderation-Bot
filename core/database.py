@@ -7,7 +7,7 @@ load_dotenv()
 
 db = SqliteDatabase('moderation_database.db')
 # db = MySQLDatabase(os.getenv('database_name'), user=os.getenv('user'),
-#                   password=os.getenv('password'), host=os.getenv('host'), port=os.getenv('port'))
+#                    password=os.getenv('password'), host=os.getenv('host'), port=os.getenv('port'))
 db.connect()
 
 
