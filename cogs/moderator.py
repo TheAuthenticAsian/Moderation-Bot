@@ -179,6 +179,7 @@ class Moderator(commands.Cog):
 
         if muted_role in user.roles:
             await utils.send_embed(ctx, "Muting Error!", [{"Details": "This user is already muted."}])
+            self.client.dispatch("command_failed", ctx)
             return
 
         timestamp = datetime.now()
