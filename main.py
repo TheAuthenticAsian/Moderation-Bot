@@ -2,10 +2,6 @@ import discord
 from discord.ext import commands
 import os
 from dotenv import load_dotenv
-import time
-
-start_time = time.time()
-
 # enviroment thing
 load_dotenv()
 
@@ -63,6 +59,5 @@ def load_cog_files(folder: str):
 
 load_cog_files(cogs_folder)
 
-print("My program took", time.time() - start_time, "to run")
 
 client.run(bot_token)
