@@ -15,34 +15,24 @@ class ModeratorData(commands.Cog):
         self.client: commands.Bot = client
 
     # Get list for the desired database
-    @commands.command(name='dataget', description='Returns all of the data in the requested database.')
+    @commands.command(name='getdata', description='Returns all of the data in the requested database.')
     @commands.has_permissions(kick_members=True, ban_members=True)
-    async def data_get(self, ctx, data_type: str):
+    async def get_data(self, ctx, data_type: str):
         """
         dataget (warned_users, banned_users, or kicked_users)
         """
 
+        data = {"warned_users": database.WarnedUser,
+                "banned_users": database.BannedUser, "warned_users": database.WarnedUser}
+
         text_list = []
 
-        if data_type == "warned_users":
-            warned_list = database.WarnedUser.select()
+        requested_data = data[data_type]
 
-            for warned_user in warned_list:
+        if requested_data:
+            for user_data in requested_data.select():
                 text_list.append(list_template.format(
-                    warned_user.username, "warned", warned_user.warned_by, warned_user.date_warned, warned_user.reason))
-
-        elif data_type == "banned_users":
-            banned_list = database.BannedUser.select()
-
-            for banned_user in banned_list:
-                text_list.append(list_template.format(
-                    banned_user.username, "banned", banned_user.banned_by, banned_user.date_banned, banned_user.reason))
-        elif data_type == "kicked_users":
-            kicked_list = database.KickedUser.select()
-
-            for kicked_user in kicked_list:
-                text_list.append(list_template.format(
-                    kicked_user.username, "kicked", kicked_user.kicked_by, kicked_user.date_kicked, kicked_user.reason))
+                    user_data.username, data_type.split("_")[0], user_data.moderator, user_data.date, user_data.reason))
         else:
             await utils.send_embed(ctx, "Command Error!", [{"Details": 'Invalid Argument: `Please choose either "warned_users", "banned_users", or "kicked_users"`'}], discord.Colour.red())
             return
@@ -51,11 +41,11 @@ class ModeratorData(commands.Cog):
             await utils.send_embed(ctx, "Command Error!", [{"Details": '`There is no data available for this database table.`'}], discord.Colour.red())
             return
 
-        user = await self.client.fetch_user(ctx.author.id)
-        await user.send(">>> " + '\n'.join(text_list))
+        user_data = await self.client.fetch_user(ctx.author.id)
+        await user_data.send(">>> " + '\n'.join(text_list))
 
-    @commands.command(name='search', description='Returns all of the data in the database for a specific user.')
-    @commands.has_permissions(kick_members=True, ban_members=True)
+    @ commands.command(name='search', description='Returns all of the data in the database for a specific user.')
+    @ commands.has_permissions(kick_members=True, ban_members=True)
     async def search(self, ctx, user: discord.User):
         """
         search (mention user here)
@@ -69,17 +59,14 @@ class ModeratorData(commands.Cog):
         kicked_list = database.KickedUser.select().where(
             database.KickedUser.user_id == user.id)
 
-        for warned_user in warned_list:
-            text_list.append(list_template.format(
-                warned_user.username, "warned", warned_user.warned_by, warned_user.date_warned, warned_user.reason))
+        def add_to_list(text: str, data_list):
+            for data in data_list:
+                text_list.append(list_template.format(
+                    data.username, text, data.moderator, data.date, data.reason))
 
-        for banned_user in banned_list:
-            text_list.append(list_template.format(
-                banned_user.username, "banned", banned_user.banned_by, banned_user.date_banned, banned_user.reason))
-
-        for kicked_user in kicked_list:
-            text_list.append(list_template.format(
-                kicked_user.username, "kicked", kicked_user.kicked_by, kicked_user.date_kicked, kicked_user.reason))
+        add_to_list("warned", warned_list)
+        add_to_list("banned", banned_list)
+        add_to_list("kicked", kicked_list)
 
         if len(text_list) == 0:
             await utils.send_embed(ctx, "Command Error!", [{"Details": '`There is no data available for this database table.`'}], discord.Colour.red())

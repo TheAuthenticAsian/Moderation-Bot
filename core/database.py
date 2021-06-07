@@ -15,33 +15,33 @@ class BaseModel(Model):
     username = CharField()
     user_id = IntegerField()
 
+    moderator = TextField()
+    date = DateField()
+    reason = TextField()
+
     class Meta:
         database = db
 
 
 class KickedUser(BaseModel):
-    kicked_by = TextField()
-    date_kicked = DateField()
-    reason = TextField()
+    pass
 
 
 class BannedUser(BaseModel):
-    banned_by = TextField()
-    date_banned = DateField()
-    reason = TextField()
+    pass
+
+
+class UnbannedUser(BaseModel):
+    pass
 
 
 class WarnedUser(BaseModel):
-    warned_by = TextField()
-    date_warned = DateField()
-    reason = TextField()
+    pass
 
 
 class MutedUser(BaseModel):
-    muted_by = TextField()
     time_muted = DateTimeField()
     mute_time_release = DateTimeField()
-    reason = TextField()
 
 
 db.create_tables([KickedUser, BannedUser, WarnedUser, MutedUser])

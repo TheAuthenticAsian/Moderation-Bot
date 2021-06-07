@@ -31,7 +31,7 @@ class Moderator(commands.Cog):
         database.KickedUser.create(
             username=user,
             user_id=user.id,
-            kicked_by=ctx.author, date_kicked=date.today(), reason=reason)
+            moderator=ctx.author, date=date.today(), reason=reason)
 
         await user.kick(reason=reason)
         await utils.send_embed(self.client.get_channel(self.log_channel), "Kick Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
@@ -62,14 +62,14 @@ class Moderator(commands.Cog):
         database.BannedUser.create(
             username=user,
             user_id=user.id,
-            banned_by=ctx.author, date_banned=date.today(), reason=reason)
+            moderator=ctx.author, date=date.today(), reason=reason)
 
         await user.ban(reason=reason)
         await utils.send_embed(self.client.get_channel(self.log_channel), "Ban Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
 
     @commands.command(description="Unbans a user.")
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, *, user: str):
+    async def unban(self, ctx, user: str, *, reason="No reason given."):
         """
         unban (username and #number) (reason)
         """
@@ -82,6 +82,11 @@ class Moderator(commands.Cog):
             banned_users = await ctx.guild.bans()
 
             database_query.get().delete_instance()
+
+            database.UnbannedUser.create(
+                username=user,
+                user_id=user.id,
+                moderator=ctx.author, date=date.today(), reason=reason)
 
             for ban_entry in banned_users:
                 if ban_entry.user.id == id:
@@ -108,7 +113,7 @@ class Moderator(commands.Cog):
         database.WarnedUser.create(
             username=user,
             user_id=user.id,
-            warned_by=ctx.author, date_warned=date.today(), reason=reason)
+            moderator=ctx.author, date=date.today(), reason=reason)
 
         database_query = database.WarnedUser.select().where(
             database.WarnedUser.username == user)
@@ -170,7 +175,7 @@ class Moderator(commands.Cog):
         unmute_time = unmute_timestamp.strftime(r'%H:%M')
 
         database.MutedUser.create(username=user,
-                                  user_id=user.id, muted_by=ctx.author, reason=reason, time_muted=current_time, mute_time_release=unmute_time)
+                                  user_id=user.id, moderator=ctx.author, date=date.today(), reason=reason, time_muted=current_time, mute_time_release=unmute_time)
 
         await user.add_roles(muted_role)
         await utils.send_embed(self.client.get_channel(self.log_channel), "Mute Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Duration: `{time}m`'}])
@@ -183,8 +188,15 @@ class Moderator(commands.Cog):
         """
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
-        await utils.send_embed(self.client.get_channel(self.log_channel), "Unmute Results", [{"Moderator": ctx.author}, {"Details": f'{user.mention} has been umuted'}])
-        await user.remove_roles(muted_role)
+        muted_user = database.MutedUser.select().where(
+            (database.MutedUser.username == user))
+
+        if muted_user:
+            muted_user.get().delete_instance()
+            await utils.send_embed(self.client.get_channel(self.log_channel), "Unmute Results", [{"Moderator": ctx.author}, {"Details": f'{user.mention} has been umuted'}])
+            await user.remove_roles(muted_role)
+        else:
+            await utils.send_embed(self.client.get_channel(self.log_channel), "Unmuting Error!", [{"Details": "User cannot be found!"}], color=discord.Colour.red())
 
 
 def setup(client):
