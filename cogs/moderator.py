@@ -25,7 +25,8 @@ class Moderator(commands.Cog):
 
         if user.guild_permissions.administrator:
             await utils.send_embed(ctx, "Command Permission Error!", [
-                {"Details": "`You cannot warn this member. They are an administrator.`"}], discord.Colour.red())
+                {"Details": "`You cannot kick this member. They are an administrator.`"}], discord.Colour.red())
+            await ctx.message.add_reaction('❌')
             return
 
         database.KickedUser.create(
@@ -35,7 +36,7 @@ class Moderator(commands.Cog):
 
         await user.kick(reason=reason)
         await utils.send_embed(self.client.get_channel(self.log_channel), "Kick Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
-
+        await ctx.message.add_reaction('✅')
     # Check if they are allowed to ban people, if so ban them
     # Ban && UnBan
 
@@ -48,7 +49,8 @@ class Moderator(commands.Cog):
 
         if user.guild_permissions.administrator:
             await utils.send_embed(ctx, "Command Permission Error!", [
-                {"Details": "`You cannot warn this member. They are an administrator.`"}], discord.Colour.red())
+                {"Details": "`You cannot ban this member. They are an administrator.`"}], discord.Colour.red())
+            await ctx.message.add_reaction('❌')
             return
 
         database_query = database.BannedUser.select().where(
@@ -57,6 +59,7 @@ class Moderator(commands.Cog):
         if database_query:
             await utils.send_embed(ctx, "Command Error!", [
                 {"Details": f"`{user} is already banned.`"}], discord.Colour.red())
+            await ctx.message.add_reaction('❌')
             return
 
         database.BannedUser.create(
@@ -66,6 +69,7 @@ class Moderator(commands.Cog):
 
         await user.ban(reason=reason)
         await utils.send_embed(self.client.get_channel(self.log_channel), "Ban Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
+        await ctx.message.add_reaction('✅')
 
     @commands.command(description="Unbans a user.")
     @commands.has_permissions(ban_members=True)
@@ -92,9 +96,12 @@ class Moderator(commands.Cog):
                 if ban_entry.user.id == id:
                     await ctx.guild.unban(ban_entry.user)
                     await utils.send_embed(self.client.get_channel(self.log_channel), "Unban Results", [{"User": user}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
+                    await ctx.message.add_reaction('✅')
+                    return
         else:
             await utils.send_embed(ctx, "Search Error!", [
                 {"Details": f'`Cannot find {user}.`'}], discord.Colour.red())
+            await ctx.message.add_reaction('❌')
 
     # Warn && UnWarn
     # If has been warned 3 times, kick them.
@@ -107,6 +114,7 @@ class Moderator(commands.Cog):
         if user.guild_permissions.administrator:
             await utils.send_embed(ctx, "Command Permission Error!", [
                 {"Details": "`You cannot warn this member. They are an administrator.`"}], discord.Colour.red())
+            await ctx.message.add_reaction('❌')
             return
 
         # Add to database
@@ -119,6 +127,7 @@ class Moderator(commands.Cog):
             database.WarnedUser.username == user)
 
         await utils.send_embed(self.client.get_channel(self.log_channel), "Warn Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
+        await ctx.message.add_reaction('✅')
 
         if len(database_query) >= 3:
             database_query.get().delete_instance()
@@ -137,9 +146,11 @@ class Moderator(commands.Cog):
         if database_query:
             database_query.get().delete_instance()
             await utils.send_embed(self.client.get_channel(self.log_channel), "Unwarn Results", [{"User": user}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
+            await ctx.message.add_reaction('✅')
         else:
             await utils.send_embed(ctx, "Search Error!", [
                 {"Details": f'`{user} has not been warned before.`'}], discord.Colour.red())
+            await ctx.message.add_reaction('❌')
 
     @commands.command(description="Removes a given users messages.")
     @commands.has_permissions(kick_members=True, ban_members=True)
@@ -150,7 +161,7 @@ class Moderator(commands.Cog):
 
         await ctx.channel.purge(limit=amount, check=lambda message: message.author == user)
         await utils.send_embed(self.client.get_channel(self.log_channel), "Purge Results", [{"Deleted User": user}, {"Moderator": ctx.author}, {"Details": f'Amount: `{amount}`'}])
-        await ctx.message.delete()
+        await ctx.message.add_reaction('✅')
 
     @commands.command(description="Mutes a user for a specified amount of time.")
     @commands.has_permissions(manage_messages=True)
@@ -161,6 +172,7 @@ class Moderator(commands.Cog):
         if user.guild_permissions.administrator:
             await utils.send_embed(ctx, "Command Permission Error!", [
                 {"Details": "`You cannot warn this member. They are an administrator.`"}], discord.Colour.red())
+            await ctx.message.add_reaction('❌')
             return
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
@@ -179,6 +191,7 @@ class Moderator(commands.Cog):
 
         await user.add_roles(muted_role)
         await utils.send_embed(self.client.get_channel(self.log_channel), "Mute Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Duration: `{time}m`'}])
+        await ctx.message.add_reaction('✅')
 
     @commands.command(description="Unmutes a user.")
     @commands.has_permissions(manage_messages=True)
@@ -195,8 +208,10 @@ class Moderator(commands.Cog):
             muted_user.get().delete_instance()
             await utils.send_embed(self.client.get_channel(self.log_channel), "Unmute Results", [{"Moderator": ctx.author}, {"Details": f'{user.mention} has been umuted'}])
             await user.remove_roles(muted_role)
+            await ctx.message.add_reaction('✅')
         else:
             await utils.send_embed(self.client.get_channel(self.log_channel), "Unmuting Error!", [{"Details": "User cannot be found!"}], color=discord.Colour.red())
+            await ctx.message.add_reaction('❌')
 
 
 def setup(client):

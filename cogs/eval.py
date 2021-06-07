@@ -9,15 +9,17 @@ from discord.ext import commands
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 class Eval(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         logger.info("EvalCMD: Cog Loaded!")
         self.owners = [409152798609899530, 158656442671431680]
 
-    @commands.command(name='eval')
+    @commands.command(name='eval', description='Evaluates python code')
     async def _eval(self, ctx, *, body):
-        """Evaluates python code"""
+        """eval (code)"""
 
         if ctx.author.id not in self.owners:
             return
@@ -61,7 +63,7 @@ class Eval(commands.Cog):
             if appd_index != len(text)-1:
                 pages.append(text[last:curr])
             return list(filter(lambda a: a != '', pages))
-        
+
         try:
             exec(to_compile, env)
         except Exception as e:
@@ -80,7 +82,7 @@ class Eval(commands.Cog):
             if ret is None:
                 if value:
                     try:
-                        
+
                         out = await ctx.send(f'```py\n{value}\n```')
                     except:
                         paginated_text = paginate(value)
@@ -106,6 +108,7 @@ class Eval(commands.Cog):
             await ctx.message.add_reaction('\u2049')  # x
         else:
             await ctx.message.add_reaction('\u2705')
+
 
 def setup(bot):
     bot.add_cog(Eval(bot))

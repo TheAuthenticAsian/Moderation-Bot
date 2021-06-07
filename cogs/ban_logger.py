@@ -32,7 +32,6 @@ class BanUpdate(commands.Cog):
 		Discord.py doesn't give us the information we need so we need to dig deeper and query the audit logs
 		'''
 
-        print("hello?")
         async for logs in guild.audit_logs(limit=1, oldest_first=False, action=discord.AuditLogAction.ban):
             # Query the audit log for a type ban, user, and get the latest one.
 
