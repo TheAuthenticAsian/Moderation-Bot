@@ -32,7 +32,7 @@ class ModeratorData(commands.Cog):
 
         if not requested_data:
             await utils.send_embed(ctx, "Command Error!", [{"Details": 'Invalid Argument: `Please choose either "warned_users", "banned_users", or "kicked_users"`'}], discord.Colour.red())
-            await ctx.message.add_reaction('❌')
+            self.client.dispatch("command_failed", ctx)
             return
 
         for user_data in requested_data.select():
@@ -41,12 +41,12 @@ class ModeratorData(commands.Cog):
 
         if len(text_list) == 0:
             await utils.send_embed(ctx, "Command Error!", [{"Details": '`There is no data available for this database.`'}], discord.Colour.red())
-            await ctx.message.add_reaction('❌')
+            self.client.dispatch("command_failed", ctx)
             return
 
         user_data = await self.client.fetch_user(ctx.author.id)
         await user_data.send(">>> " + ''.join(text_list))
-        await ctx.message.add_reaction('✅')
+        self.client.dispatch("command_succesful", ctx)
 
     @ commands.command(name='search', description='Returns all of the data in the database for a specific user.')
     @ commands.has_permissions(kick_members=True, ban_members=True)
@@ -69,12 +69,12 @@ class ModeratorData(commands.Cog):
 
         if len(text_list) == 0:
             await utils.send_embed(ctx, "Command Error!", [{"Details": '`There is no data available for this database table.`'}], discord.Colour.red())
-            await ctx.message.add_reaction('❌')
+            self.client.dispatch("command_failed", ctx)
             return
 
         user = await self.client.fetch_user(ctx.author.id)
         await user.send(">>> " + ''.join(text_list))
-        await ctx.message.add_reaction('✅')
+        self.client.dispatch("command_succesful", ctx)
 
 
 def setup(client):

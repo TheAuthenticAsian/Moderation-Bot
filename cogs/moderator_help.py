@@ -25,7 +25,7 @@ class Helper(commands.Cog):
             if not requested_command:
                 await utils.send_embed(ctx, "Help Command Error!", [
                     {"Details": "That command name does not exist. Use #help for the available commands."}], discord.Colour.red())
-                await ctx.message.add_reaction('❌')
+                self.client.dispatch("command_failed", ctx)
                 return
 
             command_index = self.command_list.index(requested_command)
@@ -33,7 +33,7 @@ class Helper(commands.Cog):
 
             await utils.send_embed(ctx, f'Command: "{command}"', [
                 {"Description": f'`{command.description}`'}, {'Usage': f'`{command.help}`'}], discord.Colour.red())
-            await ctx.message.add_reaction('✅')
+            self.client.dispatch("command_succesful", ctx)
 
         else:
             command_dict = {}
@@ -43,7 +43,7 @@ class Helper(commands.Cog):
 
             await utils.send_embed(ctx, f'Help', [command_dict], description='`Use #help (command) to get more information on a command.`')
 
-            await ctx.message.add_reaction('✅')
+            self.client.dispatch("command_succesful", ctx)
 
 
 def setup(client):
