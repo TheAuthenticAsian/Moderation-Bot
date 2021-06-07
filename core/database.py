@@ -44,5 +44,7 @@ class MutedUser(BaseModel):
     mute_time_release = DateTimeField()
 
 
-db.create_tables([KickedUser, BannedUser, WarnedUser, MutedUser])
+models = BaseModel.__subclasses__()
+
+db.create_tables(models)
 db.close()
