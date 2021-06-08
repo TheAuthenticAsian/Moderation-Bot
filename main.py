@@ -39,10 +39,10 @@ def load_cog_files(folder: str):
     if folder.find("__pycache__") != -1:
         return
 
+    # delete the first two characters because they're ".." because of the replace method
     extension_name = folder.replace("/", ".")[2:]
 
     for file in os.listdir(folder):
-        # delete the first two characters because they're ".." because of the replace method
 
         if file.endswith(".py"):
             try:
@@ -58,6 +58,4 @@ def load_cog_files(folder: str):
 
 
 load_cog_files(cogs_folder)
-
-
 client.run(bot_token)

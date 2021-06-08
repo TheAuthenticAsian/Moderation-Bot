@@ -9,7 +9,7 @@ from core.server_config import server_config
 
 class Loops(commands.Cog):
     def __init__(self, client):
-        self.client = client
+        self.client: commands.Bot = client
         self.guild_id = server_config["guild_id"]
         self.log_channel = server_config["log_channel"]
         self.unmute_loop.start()
