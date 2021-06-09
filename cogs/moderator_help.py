@@ -23,8 +23,8 @@ class Helper(commands.Cog):
                     requested_command = command
                     break
             if not requested_command:
-                await utils.send_embed(ctx, "Help Command Error!", [
-                    {"Details": "That command name does not exist. Use #help for the available commands."}], discord.Colour.red())
+                await utils.error_embed(ctx, "Help Command Error!",
+                                        {"Details": "That command name does not exist. Use #help for the available commands."})
                 self.client.dispatch("command_failed", ctx)
                 return
 

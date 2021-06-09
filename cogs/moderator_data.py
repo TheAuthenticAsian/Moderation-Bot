@@ -31,7 +31,7 @@ class ModeratorData(commands.Cog):
         requested_data = data[data_type]
 
         if not requested_data:
-            await utils.send_embed(ctx, "Command Error!", [{"Details": 'Invalid Argument: `Please choose either "warned_users", "banned_users", or "kicked_users"`'}], discord.Colour.red())
+            await utils.error_embed(ctx, "Command Error!", {"Details": 'Invalid Argument: `Please choose either "warned_users", "banned_users", or "kicked_users"`'})
             self.client.dispatch("command_failed", ctx)
             return
 
@@ -40,7 +40,7 @@ class ModeratorData(commands.Cog):
                 user_data.username, data_type.split("_")[0], user_data.moderator, user_data.date, user_data.reason))
 
         if len(text_list) == 0:
-            await utils.send_embed(ctx, "Command Error!", [{"Details": '`There is no data available for this database.`'}], discord.Colour.red())
+            await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database.`'})
             self.client.dispatch("command_failed", ctx)
             return
 
@@ -68,7 +68,7 @@ class ModeratorData(commands.Cog):
         add_to_list(database.KickedUser, "kicked")
 
         if len(text_list) == 0:
-            await utils.send_embed(ctx, "Command Error!", [{"Details": '`There is no data available for this database table.`'}], discord.Colour.red())
+            await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
             self.client.dispatch("command_failed", ctx)
             return
 

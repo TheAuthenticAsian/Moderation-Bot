@@ -17,10 +17,10 @@ class Loops(commands.Cog):
     @tasks.loop(seconds=60)
     async def unmute_loop(self):
         timestamp = datetime.now()
-        current_time = timestamp.strftime(r'%H:%M')
+        current_time = timestamp.strftime(r'%m/%d, %H:%M')
 
         muted_users = database.MutedUser.select().where(
-            (database.MutedUser.mute_time_release == current_time))
+            (database.MutedUser.mute_time_release <= current_time))
 
         if muted_users:
             for user in muted_users:
