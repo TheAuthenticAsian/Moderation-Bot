@@ -32,7 +32,7 @@ class Helper(commands.Cog):
             command = self.command_list[command_index]
 
             await utils.send_embed(ctx, f'Command: "{command}"', [
-                {"Description": f'`{command.description}`'}, {'Usage': f'`{command.help}`'}], discord.Colour.red())
+                {"Description": f'`{command.description}`'}, {'Usage': f'`{self.client.command_prefix}{command.help}`'}], discord.Colour.red())
             self.client.dispatch("command_succesful", ctx)
 
         else:

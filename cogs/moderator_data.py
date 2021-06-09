@@ -24,7 +24,7 @@ class ModeratorData(commands.Cog):
 
         # A dictionary to get the correct database for the given input
         data = {"warned_users": database.WarnedUser,
-                "banned_users": database.BannedUser, "warned_users": database.WarnedUser}
+                "banned_users": database.BannedUser, "kicked_users": database.KickedUser}
 
         text_list = []
 

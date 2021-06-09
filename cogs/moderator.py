@@ -35,7 +35,7 @@ class Moderator(commands.Cog):
 
         await user.kick(reason=reason)
         await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Kick Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
     # Check if they are allowed to ban people, if so ban them
     # Ban && UnBan
 
@@ -68,7 +68,7 @@ class Moderator(commands.Cog):
 
         await user.ban(reason=reason)
         await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Ban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
 
     @ commands.command(description="Unbans a user.")
     @ commands.has_permissions(ban_members=True)
@@ -99,7 +99,7 @@ class Moderator(commands.Cog):
             if ban_entry.user.id == id:
                 await ctx.guild.unban(ban_entry.user)
                 await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Unban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
-                self.client.dispatch("command_succesful", ctx)
+                self.client.dispatch("command_sucessful", ctx)
                 break
 
     # Warn && UnWarn
@@ -126,7 +126,7 @@ class Moderator(commands.Cog):
             database.WarnedUser.username == user)
 
         await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Warn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
 
         if len(database_query) >= 3:
             database_query.get().delete_instance()
@@ -150,7 +150,7 @@ class Moderator(commands.Cog):
 
         database_query.get().delete_instance()
         await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Unwarn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
 
     @ commands.command(description="Removes a given users messages.")
     @ commands.has_permissions(kick_members=True, ban_members=True)
@@ -161,7 +161,7 @@ class Moderator(commands.Cog):
 
         await ctx.channel.purge(limit=amount, check=lambda message: message.author == user)
         await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Purge Results", user=user, moderator=ctx.author, details={"Details": f'Amount: `{amount}`'})
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
 
     @ commands.command(description="Mutes a user for a specified amount of time.")
     @ commands.has_permissions(manage_messages=True)
@@ -191,7 +191,7 @@ class Moderator(commands.Cog):
 
         await user.add_roles(muted_role)
         await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Mute Results", user, ctx.author, {"Details": f'Duration: `{time}m`'}, reason)
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
 
     @ commands.command(description="Unmutes a user.")
     @ commands.has_permissions(manage_messages=True)
@@ -212,7 +212,15 @@ class Moderator(commands.Cog):
         muted_user.get().delete_instance()
         await utils.sucessful_embed(self.client.get_channel(self.log_channel), "Unmute Results", user=user, moderator=ctx.author, details={"Details": f'`{user} has been umuted`'})
         await user.remove_roles(muted_role)
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
+
+    @commands.command(description="Check the latency of the bot.")
+    async def ping(self, ctx):
+        """
+        ping
+        """
+        await utils.send_embed(ctx, "Latency ⌛", [{"Current Ping": f'{round(self.client.latency * 1000)}ms'}])
+        self.client.dispatch("command_sucessful", ctx)
 
 
 def setup(client):
