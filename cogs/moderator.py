@@ -35,7 +35,7 @@ class Moderator(commands.Cog):
             moderator=ctx.author, date=date.today(), reason=reason)
 
         await user.kick(reason=reason)
-        await utils.send_embed(self.client.get_channel(self.log_channel), "Kick Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
+        await utils.send_embed(self.client.get_channel(self.log_channel), "Kick Results", [{"User": user}, {"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
         self.client.dispatch("command_succesful", ctx)
     # Check if they are allowed to ban people, if so ban them
     # Ban && UnBan
@@ -68,7 +68,7 @@ class Moderator(commands.Cog):
             moderator=ctx.author, date=date.today(), reason=reason)
 
         await user.ban(reason=reason)
-        await utils.send_embed(self.client.get_channel(self.log_channel), "Ban Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
+        await utils.send_embed(self.client.get_channel(self.log_channel), "Ban Results", [{"User": user}, {"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
         self.client.dispatch("command_succesful", ctx)
 
     @commands.command(description="Unbans a user.")
@@ -126,7 +126,7 @@ class Moderator(commands.Cog):
         database_query = database.WarnedUser.select().where(
             database.WarnedUser.username == user)
 
-        await utils.send_embed(self.client.get_channel(self.log_channel), "Warn Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
+        await utils.send_embed(self.client.get_channel(self.log_channel), "Warn Results", [{"User": user}, {"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Date: `{date.today()}`'}])
         self.client.dispatch("command_succesful", ctx)
 
         if len(database_query) >= 3:
@@ -192,7 +192,7 @@ class Moderator(commands.Cog):
                                   user_id=user.id, moderator=ctx.author, date=date.today(), reason=reason, time_muted=current_time, mute_time_release=unmute_time)
 
         await user.add_roles(muted_role)
-        await utils.send_embed(self.client.get_channel(self.log_channel), "Mute Results", [{"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Duration: `{time}m`'}])
+        await utils.send_embed(self.client.get_channel(self.log_channel), "Mute Results", [{"User": user}, {"Reason": reason}, {"Moderator": ctx.author}, {"Details": f'Duration: `{time}m`'}])
         self.client.dispatch("command_succesful", ctx)
 
     @commands.command(description="Unmutes a user.")
@@ -211,7 +211,7 @@ class Moderator(commands.Cog):
             self.client.dispatch("command_failed", ctx)
 
         muted_user.get().delete_instance()
-        await utils.send_embed(self.client.get_channel(self.log_channel), "Unmute Results", [{"Moderator": ctx.author}, {"Details": f'{user.mention} has been umuted'}])
+        await utils.send_embed(self.client.get_channel(self.log_channel), "Unmute Results", [{"User": user}, {"Moderator": ctx.author}, {"Details": f'{user.mention} has been umuted'}])
         await user.remove_roles(muted_role)
         self.client.dispatch("command_succesful", ctx)
 
