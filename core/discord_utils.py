@@ -15,7 +15,16 @@ async def send_embed(ctx, name, field_table, color=discord.Colour.blue(), descri
 
 
 async def sucessful_embed(ctx, name: str, user, moderator: str, details: dict, reason=None,):
+    """[Send an embed saying the command was sucessful]
 
+    Args:
+        ctx ([Context]): [The ctx]
+        name (str): [The name of the embed]
+        user ([type]): [The user]
+        moderator (str): [The moderator]
+        details (dict): [details (dict): [A dictionary, the key is the title, and the value is the message]
+        reason ([type], optional): [The reason]. Defaults to None.
+    """
     if not reason:
         await send_embed(ctx, name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details])
         return
