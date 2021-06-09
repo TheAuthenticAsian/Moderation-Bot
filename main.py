@@ -1,14 +1,14 @@
+import os
 import discord
 from discord.ext import commands
-import os
 from dotenv import load_dotenv
 # enviroment thing
 load_dotenv()
 
-bot_token = os.getenv('token')
-bot_prefix = "??"
+BOT_TOKEN = os.getenv('token')
+BOT_PREFIX = "??"
 
-cogs_folder = "./cogs"
+COGS_FOLDER = "./cogs"
 
 intents = discord.Intents.default()
 intents.reactions = True
@@ -16,14 +16,15 @@ intents.members = True
 intents.presences = True
 intents.bans = True
 
-client = commands.Bot(command_prefix=bot_prefix,
+client = commands.Bot(command_prefix=BOT_PREFIX,
                       help_command=None, intents=intents)
 
 
 # set activity
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name=f"{bot_prefix}help"))
+    await client.change_presence(
+        activity=discord.Activity(type=discord.ActivityType.playing, name=f"{BOT_PREFIX}help"))
 
 # load cogs
 
@@ -48,14 +49,14 @@ def load_cog_files(folder: str):
             try:
                 client.load_extension(f"{extension_name}.{file[:-3]}")
                 print(f"Loaded: {file}")
-            except Exception as e:
+            except Exception as error:
                 print(f"Could not load: {file}")
-                print(e)
+                print(error)
             continue
 
         if os.path.isdir(f"{folder}/{file}"):
             load_cog_files(f"{folder}/{file}")
 
 
-load_cog_files(cogs_folder)
-client.run(bot_token)
+load_cog_files(COGS_FOLDER)
+client.run(BOT_TOKEN)
