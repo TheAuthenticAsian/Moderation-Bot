@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+
 # enviroment thing
 load_dotenv()
 
@@ -23,8 +24,7 @@ client = commands.Bot(command_prefix=BOT_PREFIX,
 # set activity
 @client.event
 async def on_ready():
-    await client.change_presence(
-        activity=discord.Activity(type=discord.ActivityType.playing, name=f"{BOT_PREFIX}help"))
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.playing, name=f"{BOT_PREFIX}help"))
 
 # load cogs
 
