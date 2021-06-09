@@ -18,7 +18,7 @@ class Moderator(commands.Cog):
 
     @commands.command(description="Kicks a user from the server.")
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, user: discord.User, *, reason="No reason given."):
+    async def kick(self, ctx, user: discord.Member, *, reason="No reason given."):
         """
         kick (mention user here) (reason)
         """
@@ -42,7 +42,7 @@ class Moderator(commands.Cog):
 
     @commands.command(description="Bans a user from the server.")
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, user: discord.User, *, reason="No reason given."):
+    async def ban(self, ctx, user: discord.Member, *, reason="No reason given."):
         """
         ban (mention user here) (reason)
         """

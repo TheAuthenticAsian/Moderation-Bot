@@ -50,7 +50,7 @@ class ModeratorData(commands.Cog):
 
     @ commands.command(name='search', description='Returns all of the data in the database for a specific user.')
     @ commands.has_permissions(kick_members=True, ban_members=True)
-    async def search(self, ctx, user: discord.User):
+    async def search(self, ctx, user: discord.Member):
         """
         search (mention user here)
         """
