@@ -1,7 +1,17 @@
+from typing import List
 import discord
 
 
-async def send_embed(ctx, name, field_table, color=discord.Colour.blue(), description=""):
+async def send_embed(ctx, name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description=""):
+    """[Make sending an embed easier and more quicker]
+
+    Args:
+        ctx ([Context]): [The context]
+        name (str): [The title of the embed]
+        field_table (List[dict]): [A table containing dictionaries, the key of which is name of the field, and the value is the value of the field]
+        color ([discord.Colour], optional): [The color you want]. Defaults to discord.Colour.blue().
+        description (str, optional): [The description]. Defaults to "".
+    """
     embed = discord.Embed(title=name, description=description, color=color)
 
     for field_dict in field_table:
