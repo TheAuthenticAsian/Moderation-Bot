@@ -61,7 +61,7 @@ class BanUpdate(commands.Cog):
             # Okay now we got our reason, we need to get a few more things
 
             timestamp = now.strftime(
-                "%-m/%-d/%Y %H-%M-%S")  # Get our timestamp
+                "%m/%d/%Y %H-%M-%S")  # Get our timestamp
 
             # Get full username with tag
             fullUsernameTARGET = f"{target.display_name}#{target.discriminator}"

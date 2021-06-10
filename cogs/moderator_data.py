@@ -5,7 +5,6 @@ from core import database
 
 # This file is for commands to give user the data, for example to get people that are banned or who kicked who.
 
-
 # String template for getlist command. 0 = username, 1 = what happenend, 2 = person who did it, 3 = date, 4 = reason
 list_template = '**{0}** was {1} by **{2}** on **{3}** for **"{4}"** \n'
 
@@ -46,7 +45,7 @@ class ModeratorData(commands.Cog):
 
         user_data = await self.client.fetch_user(ctx.author.id)
         await user_data.send(">>> " + ''.join(text_list))
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
 
     @ commands.command(name='search', description='Returns all of the data in the database for a specific user.')
     @ commands.has_permissions(kick_members=True, ban_members=True)
@@ -74,7 +73,7 @@ class ModeratorData(commands.Cog):
 
         user = await self.client.fetch_user(ctx.author.id)
         await user.send(">>> " + ''.join(text_list))
-        self.client.dispatch("command_succesful", ctx)
+        self.client.dispatch("command_sucessful", ctx)
 
 
 def setup(client):
