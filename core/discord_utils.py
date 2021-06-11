@@ -2,7 +2,7 @@ from typing import List
 import discord
 
 
-async def send_embed(ctx, name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description=""):
+async def send_embed(ctx, name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description="", thumbnail=None):
     """[Make sending an embed easier and more quicker]
 
     Args:
@@ -21,10 +21,13 @@ async def send_embed(ctx, name: str, field_table: List[dict], color: discord.Col
 
     embed.set_footer(text='"Masa is ||~short~||" - ChilledFrost')
 
+    if thumbnail:
+        embed.set_thumbnail(url=thumbnail)
+
     await ctx.send(embed=embed)
 
 
-async def successful_embed(ctx, name: str, user, moderator: str, details: dict, reason=None,):
+async def successful_embed(ctx, name: str, user, moderator: str, details: dict, reason=None):
     """[Send an embed saying the command was successful]
 
     Args:
@@ -36,10 +39,10 @@ async def successful_embed(ctx, name: str, user, moderator: str, details: dict, 
         reason ([type], optional): [The reason]. Defaults to None.
     """
     if not reason:
-        await send_embed(ctx, name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details])
+        await send_embed(ctx, name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
         return
 
-    await send_embed(ctx, name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details])
+    await send_embed(ctx, name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
 
 
 async def error_embed(ctx, error_message: str, details: dict):
