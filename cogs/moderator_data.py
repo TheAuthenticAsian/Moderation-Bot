@@ -45,7 +45,7 @@ class ModeratorData(commands.Cog):
 
         user_data = await self.client.fetch_user(ctx.author.id)
         await user_data.send(">>> " + ''.join(text_list))
-        self.client.dispatch("command_sucessful", ctx)
+        self.client.dispatch("command_successful", ctx)
 
     @ commands.command(name='search', description='Returns all of the data in the database for a specific user.')
     @ commands.has_permissions(kick_members=True, ban_members=True)
@@ -73,7 +73,7 @@ class ModeratorData(commands.Cog):
 
         user = await self.client.fetch_user(ctx.author.id)
         await user.send(">>> " + ''.join(text_list))
-        self.client.dispatch("command_sucessful", ctx)
+        self.client.dispatch("command_successful", ctx)
 
 
 def setup(client):

@@ -26,7 +26,7 @@ class ErrorHandler(commands.Cog):
             return
 
         await utils.send_embed(ctx, "Command Error!", [
-            {"Details": f"There has been an unkown error: `{error}`"}], discord.Colour.red())
+            {"Details": f"There has been an unknown error: `{error}`"}], discord.Colour.red())
 
 
 def setup(client):

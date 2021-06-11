@@ -24,8 +24,8 @@ async def send_embed(ctx, name: str, field_table: List[dict], color: discord.Col
     await ctx.send(embed=embed)
 
 
-async def sucessful_embed(ctx, name: str, user, moderator: str, details: dict, reason=None,):
-    """[Send an embed saying the command was sucessful]
+async def successful_embed(ctx, name: str, user, moderator: str, details: dict, reason=None,):
+    """[Send an embed saying the command was successful]
 
     Args:
         ctx ([Context]): [The ctx]

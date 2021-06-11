@@ -7,7 +7,7 @@ class CustomEvents(commands.Cog):
         self.client = client
 
     @commands.Cog.listener()
-    async def on_command_sucessful(self, ctx):
+    async def on_command_successful(self, ctx):
         await ctx.message.add_reaction('✅')
 
     @commands.Cog.listener()
