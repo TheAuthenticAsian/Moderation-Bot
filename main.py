@@ -18,7 +18,7 @@ intents.presences = True
 intents.bans = True
 
 client = commands.Bot(command_prefix=BOT_PREFIX,
-                      help_command=None, intents=intents)
+                      help_command=None, intents=intents, case_insensitive=True)
 
 
 # set activity

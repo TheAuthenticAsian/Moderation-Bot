@@ -8,14 +8,14 @@ class Helper(commands.Cog):
     def __init__(self, client):
         self.client: commands.Bot = client
 
-        # Sort the commands from least to greatest so it's more aestetic
+        # Sort the commands from least to greatest so it's more aesthetic
         self.command_list = [command for command in self.client.commands]
         self.command_list.sort(reverse=True,
                                key=lambda x: -len(operator.attrgetter('description')(x)))
 
     @commands.command(description="The help command.")
     async def help(self, ctx, command_name=None):
-        # Find the help section of the requeted command and if not found, say it doesn't exist.
+        # Find the help section of the requested command and if not found, say it doesn't exist.
         if command_name != None:
             requested_command = None
             for command in self.command_list:
@@ -33,7 +33,7 @@ class Helper(commands.Cog):
 
             await utils.send_embed(ctx, f'Command: "{command}"', [
                 {"Description": f'`{command.description}`'}, {'Usage': f'`{self.client.command_prefix}{command.help}`'}], discord.Colour.red())
-            self.client.dispatch("command_succesful", ctx)
+            self.client.dispatch("command_successful", ctx)
 
         else:
             command_dict = {}
@@ -43,7 +43,7 @@ class Helper(commands.Cog):
 
             await utils.send_embed(ctx, f'Help', [command_dict], description='`Use #help (command) to get more information on a command.`')
 
-            self.client.dispatch("command_succesful", ctx)
+            self.client.dispatch("command_successful", ctx)
 
 
 def setup(client):
