@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from core import discord_utils as utils
 from core import database
+from pygicord import Paginator
 
 # This file is for commands to give user the data, for example to get people that are banned or who kicked who.
 
@@ -16,63 +17,77 @@ class ModeratorData(commands.Cog):
     # Get list for the desired database
     @commands.command(name='getdata', description='Returns all of the data in the requested database.')
     @commands.has_permissions(kick_members=True, ban_members=True)
-    async def get_data(self, ctx, data_type: str):
+    async def get_data(self, ctx, case_number: int):
         """
         getdata (warned_users, banned_users, or kicked_users)
         """
+        
+        async def get_pages():
+            pages = []
+            # Generate a list of 5 embeds
+            query = database.ModerationLogs.select().where(database.ModerationLogs.id == case_number)
 
-        # A dictionary to get the correct database for the given input
-        data = {"warned_users": database.WarnedUser,
-                "banned_users": database.BannedUser, "kicked_users": database.KickedUser}
+            if query.exists():
+                for q in query:
+                    modObj = await self.bot.fetch_user(q.moderator_id)
 
-        text_list = []
+                    embed = discord.embed(title = "Query Results", description = f"Query requested by {ctx.author.mention}.\nSearch Query: {user.mention}")
+                    embed.add_field(name = "Data", value = f"**User:** {q.username}\n**User ID:** {q.user_id}\n**\n**Moderator** {modObj.display_name}\n**Date:** {str(q.date)}\n**Action:** {q.action}\n**Reason:** {q.reason}\n**")
+                    embed.set_footer(text = f"Case ID: {q.id}")
 
-        requested_data = data[data_type]
+                    pages.append(embed)
+                return pages
+            else:
+                return None
 
-        if not requested_data:
-            await utils.error_embed(ctx, "Command Error!", {"Details": 'Invalid Argument: `Please choose either "warned_users", "banned_users", or "kicked_users"`'})
-            self.client.dispatch("command_failed", ctx)
-            return
+        value = await get_pages()
 
-        for user_data in requested_data.select():
-            text_list.append(list_template.format(
-                user_data.username, data_type.split("_")[0], user_data.moderator, user_data.date, user_data.reason))
-
-        if len(text_list) == 0:
-            await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database.`'})
-            self.client.dispatch("command_failed", ctx)
-            return
-
-        user_data = await self.client.fetch_user(ctx.author.id)
-        await user_data.send(">>> " + ''.join(text_list))
-        self.client.dispatch("command_successful", ctx)
-
-    @ commands.command(name='search', description='Returns all of the data in the database for a specific user.')
-    @ commands.has_permissions(kick_members=True, ban_members=True)
-    async def search(self, ctx, user: discord.Member):
-        """
-        search (mention user here)
-        """
-        text_list = []
-
-        # function to add data to the text_list
-        def add_to_list(model, text: str):
-            data_list = model.select().where(model.user_id == user.id)
-            for data in data_list:
-                text_list.append(list_template.format(
-                    data.username, text, data.moderator, data.date, data.reason))
-
-        add_to_list(database.WarnedUser, "warned")
-        add_to_list(database.BannedUser, "banned")
-        add_to_list(database.KickedUser, "kicked")
-
-        if len(text_list) == 0:
+        if value == None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
             self.client.dispatch("command_failed", ctx)
             return
 
-        user = await self.client.fetch_user(ctx.author.id)
-        await user.send(">>> " + ''.join(text_list))
+        paginator = Paginator(pages=get_pages())
+        await paginator.start(ctx)
+        
+
+        self.client.dispatch("command_successful", ctx)
+
+    @commands.command(name='search', description='Returns all of the data in the database for a specific user.')
+    @commands.has_permissions(kick_members=True, ban_members=True)
+    async def search(self, ctx, user: discord.Member):
+        """
+        search (mention user here)
+        """
+
+        async def get_pages():
+            pages = []
+            # Generate a list of 5 embeds
+            query = database.ModerationLogs.select().where(database.ModerationLogs.user_id == user.id)
+
+            if query.exists():
+                for q in query:
+                    modObj = await self.bot.fetch_user(q.moderator_id)
+
+                    embed = discord.embed(title = "Query Results", description = f"Query requested by {ctx.author.mention}.\nSearch Query: {user.mention}")
+                    embed.add_field(name = "Data", value = f"**User:** {q.username}\n**User ID:** {q.user_id}\n**\n**Moderator** {modObj.display_name}\n**Date:** {str(q.date)}\n**Action:** {q.action}\n**Reason:** {q.reason}\n**")
+                    embed.set_footer(text = f"Case ID: {q.id}")
+
+                    pages.append(embed)
+                return pages
+            else:
+                return None
+
+        value = await get_pages()
+
+        if value == None:
+            await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
+            self.client.dispatch("command_failed", ctx)
+            return
+
+        paginator = Paginator(pages=get_pages())
+        await paginator.start(ctx)
+
         self.client.dispatch("command_successful", ctx)
 
 
