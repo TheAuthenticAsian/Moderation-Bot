@@ -12,10 +12,11 @@ db.connect()
 
 
 class BaseModel(Model):
+    id = AutoField()
     username = CharField()
     user_id = IntegerField()
 
-    moderator = TextField()
+    moderator_id = TextField()
     date = DateField()
     reason = TextField()
 
@@ -23,20 +24,8 @@ class BaseModel(Model):
         database = db
 
 
-class KickedUser(BaseModel):
-    pass
-
-
-class BannedUser(BaseModel):
-    pass
-
-
-class UnbannedUser(BaseModel):
-    pass
-
-
-class WarnedUser(BaseModel):
-    pass
+class ModerationLogs(BaseModel):
+    action = TextField()
 
 
 class MutedUser(BaseModel):

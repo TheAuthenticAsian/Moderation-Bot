@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-# enviroment thing
+# environment thing
 load_dotenv()
 
 BOT_TOKEN = os.getenv('token')

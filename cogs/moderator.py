@@ -28,10 +28,10 @@ class Moderator(commands.Cog):
             self.client.dispatch("command_failed", ctx)
             return
 
-        database.KickedUser.create(
+        database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author, date=date.today(), reason=reason)
+            moderator=ctx.author.id, date=date.today(), reason=reason, action = "KICK")
 
         await user.kick(reason=reason)
         await utils.successful_embed(self.client.get_channel(self.log_channel), "Kick Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
@@ -52,8 +52,8 @@ class Moderator(commands.Cog):
             self.client.dispatch("command_failed", ctx)
             return
 
-        database_query = database.BannedUser.select().where(
-            database.BannedUser.username == user)
+        database_query = database.ModerationLogs.select().where(
+            database.ModerationLogs.user_id == user.id)
 
         if database_query:
             await utils.error_embed(ctx, "Command Error!",
@@ -61,10 +61,10 @@ class Moderator(commands.Cog):
             self.client.dispatch("command_failed", ctx)
             return
 
-        database.BannedUser.create(
+        database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author, date=date.today(), reason=reason)
+            moderator=ctx.author.id, date=date.today(), reason=reason, action = "BAN")
 
         await user.ban(reason=reason)
         await utils.successful_embed(self.client.get_channel(self.log_channel), "Ban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
@@ -77,8 +77,8 @@ class Moderator(commands.Cog):
         unban (username and #number) (reason)
         """
 
-        database_query = database.BannedUser.select().where(
-            database.BannedUser.username == user)
+        database_query = database.ModerationLogs.select().where(
+            database.ModerationLogs.user_id == user.id)
 
         if not database_query:
             await utils.error_embed(ctx, "Search Error!",
@@ -90,10 +90,10 @@ class Moderator(commands.Cog):
 
         database_query.get().delete_instance()
 
-        database.UnbannedUser.create(
+        database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author, date=date.today(), reason=reason)
+            moderator=ctx.author.id, date=date.today(), reason=reason, action = "UNBAN")
 
         for ban_entry in banned_users:
             if ban_entry.user.id == id:
@@ -117,13 +117,13 @@ class Moderator(commands.Cog):
             return
 
         # Add to database
-        database.WarnedUser.create(
+        database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author, date=date.today(), reason=reason)
+            moderator=ctx.author.id, date=date.today(), reason=reason, action = "WARN")
 
-        database_query = database.WarnedUser.select().where(
-            database.WarnedUser.username == user)
+        database_query = database.ModerationLogs.select().where(
+            database.ModerationLogs.user_id == user.id)
 
         await utils.successful_embed(self.client.get_channel(self.log_channel), "Warn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
         self.client.dispatch("command_successful", ctx)
@@ -139,8 +139,8 @@ class Moderator(commands.Cog):
         unwarn (mention user here) (reason)
         """
         # Add to database
-        database_query = database.WarnedUser.select().where(
-            database.WarnedUser.username == user)
+        database_query = database.ModerationLogs.select().where(
+            database.ModerationLogs.user_id == user.id)
 
         if not database_query:
             await utils.error_embed(ctx, "Search Error!",
@@ -186,8 +186,10 @@ class Moderator(commands.Cog):
         current_time = timestamp.strftime(r'%m/%d, %H:%M')
         unmute_time = unmute_timestamp.strftime(r'%m/%d, %H:%M')
 
-        database.MutedUser.create(username=user,
-                                  user_id=user.id, moderator=ctx.author, date=date.today(), reason=reason, time_muted=current_time, mute_time_release=unmute_time)
+        database.ModerationLogs.create(
+            username=user,
+            user_id=user.id,
+            moderator=ctx.author.id, date=date.today(), reason=reason, action = "MUTE")
 
         await user.add_roles(muted_role)
         await utils.successful_embed(self.client.get_channel(self.log_channel), "Mute Results", user, ctx.author, {"Details": f'Duration: `{time}m`'}, reason)
