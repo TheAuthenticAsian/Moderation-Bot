@@ -31,7 +31,7 @@ class Moderator(commands.Cog):
         database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author.id, date=date.today(), reason=reason, action = "KICK")
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="KICK")
 
         await user.kick(reason=reason)
         await utils.successful_embed(self.client.get_channel(self.log_channel), "Kick Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
@@ -64,7 +64,7 @@ class Moderator(commands.Cog):
         database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author.id, date=date.today(), reason=reason, action = "BAN")
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="BAN")
 
         await user.ban(reason=reason)
         await utils.successful_embed(self.client.get_channel(self.log_channel), "Ban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
@@ -93,7 +93,7 @@ class Moderator(commands.Cog):
         database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author.id, date=date.today(), reason=reason, action = "UNBAN")
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="UNBAN")
 
         for ban_entry in banned_users:
             if ban_entry.user.id == id:
@@ -120,7 +120,7 @@ class Moderator(commands.Cog):
         database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author.id, date=date.today(), reason=reason, action = "WARN")
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="WARN")
 
         database_query = database.ModerationLogs.select().where(
             database.ModerationLogs.user_id == user.id)
@@ -160,7 +160,7 @@ class Moderator(commands.Cog):
         """
 
         await ctx.channel.purge(limit=amount, check=lambda message: message.author == user)
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Purge Results", user=user, moderator=ctx.author, details={"Details": f'Amount: `{amount}`'})
+        await utils.successful_embed(self.client.get_channel(self.log_channel), "Purge Results", user=user, moderator_id=ctx.author, details={"Details": f'Amount: `{amount}`'})
         self.client.dispatch("command_successful", ctx)
 
     @ commands.command(description="Mutes a user for a specified amount of time.")
@@ -189,7 +189,7 @@ class Moderator(commands.Cog):
         database.ModerationLogs.create(
             username=user,
             user_id=user.id,
-            moderator=ctx.author.id, date=date.today(), reason=reason, action = "MUTE")
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="MUTE")
 
         await user.add_roles(muted_role)
         await utils.successful_embed(self.client.get_channel(self.log_channel), "Mute Results", user, ctx.author, {"Details": f'Duration: `{time}m`'}, reason)
@@ -212,7 +212,7 @@ class Moderator(commands.Cog):
             return
 
         muted_user.get().delete_instance()
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Unmute Results", user=user, moderator=ctx.author, details={"Details": f'`{user} has been umuted`'})
+        await utils.successful_embed(self.client.get_channel(self.log_channel), "Unmute Results", user=user, moderator_id=ctx.author, details={"Details": f'`{user} has been umuted`'})
         await user.remove_roles(muted_role)
         self.client.dispatch("command_successful", ctx)
 

@@ -30,10 +30,10 @@ class ModeratorData(commands.Cog):
 
             if query.exists():
                 for q in query:
-                    modObj = await self.bot.fetch_user(q.moderator_id)
-                    user = await self.bot.fetch_user(q.user_id)
+                    modObj = await self.client.fetch_user(q.moderator_id)
+                    user = await self.client.fetch_user(q.user_id)
 
-                    embed = discord.embed(
+                    embed = discord.Embed(
                         title="Query Results", description=f"Query requested by {ctx.author.mention}.\nSearch Query: {user.mention}")
                     embed.add_field(
                         name="Data", value=f"**User:** {q.username}\n**User ID:** {q.user_id}\n**\n**Moderator** {modObj.display_name}\n**Date:** {str(q.date)}\n**Action:** {q.action}\n**Reason:** {q.reason}\n**")
@@ -48,13 +48,13 @@ class ModeratorData(commands.Cog):
 
         if value == None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
-            self.client.dispatch("command_failed", ctx)
+            await self.client.dispatch("command_failed", ctx)
             return
 
-        paginator = Paginator(pages=get_pages())
+        paginator = Paginator(pages=value)
         await paginator.start(ctx)
 
-        self.client.dispatch("command_successful", ctx)
+        await self.client.dispatch("command_successful", ctx)
 
     @commands.command(name='search', description='Returns all of the data in the database for a specific user.')
     @commands.has_permissions(kick_members=True, ban_members=True)
@@ -71,9 +71,9 @@ class ModeratorData(commands.Cog):
 
             if query.exists():
                 for q in query:
-                    modObj = await self.bot.fetch_user(q.moderator_id)
+                    modObj = await self.client.fetch_user(q.moderator_id)
 
-                    embed = discord.embed(
+                    embed = discord.Embed(
                         title="Query Results", description=f"Query requested by {ctx.author.mention}.\nSearch Query: {user.mention}")
                     embed.add_field(
                         name="Data", value=f"**User:** {q.username}\n**User ID:** {q.user_id}\n**\n**Moderator** {modObj.display_name}\n**Date:** {str(q.date)}\n**Action:** {q.action}\n**Reason:** {q.reason}\n**")
@@ -88,13 +88,13 @@ class ModeratorData(commands.Cog):
 
         if value == None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
-            self.client.dispatch("command_failed", ctx)
+            await self.client.dispatch("command_failed", ctx)
             return
 
-        paginator = Paginator(pages=get_pages())
+        paginator = Paginator(pages=value)
         await paginator.start(ctx)
 
-        self.client.dispatch("command_successful", ctx)
+        await self.client.dispatch("command_successful", ctx)
 
 
 def setup(client):
