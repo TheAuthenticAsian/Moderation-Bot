@@ -19,7 +19,7 @@ class ModeratorData(commands.Cog):
     @commands.has_permissions(kick_members=True, ban_members=True)
     async def get_data(self, ctx, case_number: int):
         """
-        getdata (warned_users, banned_users, or kicked_users)
+        getdata (case_number)
         """
 
         async def get_pages():
@@ -31,6 +31,7 @@ class ModeratorData(commands.Cog):
             if query.exists():
                 for q in query:
                     modObj = await self.bot.fetch_user(q.moderator_id)
+                    user = await self.bot.fetch_user(q.user_id)
 
                     embed = discord.embed(
                         title="Query Results", description=f"Query requested by {ctx.author.mention}.\nSearch Query: {user.mention}")
