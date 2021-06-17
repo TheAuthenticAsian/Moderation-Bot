@@ -1,8 +1,9 @@
+from datetime import datetime, timedelta
 from typing import List
 import discord
 
 
-async def send_embed(ctx, name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description="", thumbnail=None):
+async def send_embed(ctxs, name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description="", thumbnail=None):
     """[Make sending an embed easier and more quicker]
 
     Args:
@@ -24,7 +25,10 @@ async def send_embed(ctx, name: str, field_table: List[dict], color: discord.Col
     if thumbnail:
         embed.set_thumbnail(url=thumbnail)
 
-    await ctx.send(embed=embed)
+    print(ctxs)
+
+    for ctx in ctxs:
+        await ctx.send(embed=embed)
 
 
 async def successful_embed(ctx, name: str, user, moderator: str, details: dict, reason=None):
@@ -38,6 +42,10 @@ async def successful_embed(ctx, name: str, user, moderator: str, details: dict, 
         details (dict): [details (dict): [A dictionary, the key is the title, and the value is the message]
         reason ([type], optional): [The reason]. Defaults to None.
     """
+    if not user:
+        await send_embed(ctx, name, [{"🚓 Moderator": moderator}, details])
+        return
+
     if not reason:
         await send_embed(ctx, name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
         return
@@ -53,4 +61,22 @@ async def error_embed(ctx, error_message: str, details: dict):
         error_message (str): [The title of the embed]
         details (dict): [A dictionary, the key is the title, and the value is the message]
     """
-    await send_embed(ctx, error_message, [details], color=discord.Colour.red())
+    await send_embed([ctx], error_message, [details], color=discord.Colour.red())
+
+
+def convert_time_to_seconds(time):
+    time_convert = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+    try:
+        return int(time[:-1]) * time_convert[time[-1]]
+    except:
+        return time
+
+
+def showFutureTime(time):
+    now = datetime.now()
+    output = convert_time_to_seconds(time)
+
+    add = timedelta(seconds=int(output))
+    now_plus_10 = now + add
+
+    return now_plus_10.strftime(r'%m/%d, %H:%M')

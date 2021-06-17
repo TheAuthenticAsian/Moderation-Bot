@@ -48,13 +48,13 @@ class ModeratorData(commands.Cog):
 
         if value == None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
-            await self.client.dispatch("command_failed", ctx)
+            self.client.dispatch("command_failed", ctx)
             return
 
-        paginator = Paginator(pages=value)
+        paginator = Paginator(pages=await get_pages())
         await paginator.start(ctx)
 
-        await self.client.dispatch("command_successful", ctx)
+        self.client.dispatch("command_successful", ctx)
 
     @commands.command(name='search', description='Returns all of the data in the database for a specific user.')
     @commands.has_permissions(kick_members=True, ban_members=True)
@@ -88,13 +88,13 @@ class ModeratorData(commands.Cog):
 
         if value == None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
-            await self.client.dispatch("command_failed", ctx)
+            self.client.dispatch("command_failed", ctx)
             return
 
-        paginator = Paginator(pages=value)
+        paginator = Paginator(pages=await get_pages())
         await paginator.start(ctx)
 
-        await self.client.dispatch("command_successful", ctx)
+        self.client.dispatch("command_successful", ctx)
 
 
 def setup(client):
