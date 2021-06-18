@@ -7,7 +7,7 @@ async def send_embed(ctxs, name: str, field_table: List[dict], color: discord.Co
     """[Make sending an embed easier and more quicker]
 
     Args:
-        ctx ([Context]): [The context]
+        ctxs ([Context]): [The context, can be a table of ctxs too]
         name (str): [The title of the embed]
         field_table (List[dict]): [A table containing dictionaries, the key of which is name of the field, and the value is the value of the field]
         color ([discord.Colour], optional): [The color you want]. Defaults to discord.Colour.blue().
@@ -25,10 +25,11 @@ async def send_embed(ctxs, name: str, field_table: List[dict], color: discord.Co
     if thumbnail:
         embed.set_thumbnail(url=thumbnail)
 
-    print(ctxs)
-
-    for ctx in ctxs:
-        await ctx.send(embed=embed)
+    if isinstance(ctxs, list):
+        for ctx in ctxs:
+            await ctx.send(embed=embed)
+    else:
+        await ctxs.send(embed=embed)
 
 
 async def successful_embed(ctx, name: str, user, moderator: str, details: dict, reason=None):
@@ -61,7 +62,7 @@ async def error_embed(ctx, error_message: str, details: dict):
         error_message (str): [The title of the embed]
         details (dict): [A dictionary, the key is the title, and the value is the message]
     """
-    await send_embed([ctx], error_message, [details], color=discord.Colour.red())
+    await send_embed(ctx, error_message, [details], color=discord.Colour.red())
 
 
 def convert_time_to_seconds(time):

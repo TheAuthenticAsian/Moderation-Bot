@@ -24,7 +24,7 @@ class Loops(commands.Cog):
 
         if muted_users:
             for user in muted_users:
-                guild = self.client.get_guild(self.guild_id)
+                guild: discord.Guild = self.client.get_guild(self.guild_id)
                 guild_member = guild.get_member(user.user_id)
                 muted_role = discord.utils.get(guild.roles, name='Muted')
                 await guild_member.remove_roles(muted_role)

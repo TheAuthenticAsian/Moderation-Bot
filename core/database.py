@@ -2,19 +2,19 @@ import os
 from peewee import *
 from dotenv import load_dotenv
 
-# enviroment thing
+# environment thing
 load_dotenv()
 
-db = SqliteDatabase('moderation_database.db')
-# db = MySQLDatabase(os.getenv('database_name'), user=os.getenv('user'),
-#                    password=os.getenv('password'), host=os.getenv('host'), port=os.getenv('port'))
+#db = SqliteDatabase('moderation_database.db')
+db = MySQLDatabase(os.getenv('database_name'), user=os.getenv('user'),
+                   password=os.getenv('password'), host=os.getenv('host'), port=int(os.getenv('port')))
 db.connect()
 
 
 class BaseModel(Model):
     id = AutoField()
     username = CharField()
-    user_id = IntegerField()
+    user_id = BigIntegerField()
 
     moderator_id = TextField()
     date = DateField()
@@ -33,7 +33,7 @@ class MutedUser(BaseModel):
     mute_time_release = DateTimeField()
 
 
-models = BaseModel.__subclasses__()
-
-db.create_tables(models)
-db.close()
+if __name__ == "__main__":
+    models = BaseModel.__subclasses__()
+    db.create_tables(models)
+    db.close()
