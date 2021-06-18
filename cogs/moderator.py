@@ -34,7 +34,7 @@ class Moderator(commands.Cog):
             moderator_id=ctx.author.id, date=date.today(), reason=reason, action="KICK")
 
         await user.kick(reason=reason)
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Kick Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
+        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Kick Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
         self.client.dispatch("command_successful", ctx)
     # Check if they are allowed to ban people, if so ban them
     # Ban && UnBan
@@ -67,7 +67,7 @@ class Moderator(commands.Cog):
             moderator_id=ctx.author.id, date=date.today(), reason=reason, action="BAN")
 
         await user.ban(reason=reason)
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Ban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
+        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Ban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
         self.client.dispatch("command_successful", ctx)
 
     @ commands.command(description="Unbans a user.")
@@ -98,7 +98,7 @@ class Moderator(commands.Cog):
         for ban_entry in banned_users:
             if ban_entry.user.id == id:
                 await ctx.guild.unban(ban_entry.user)
-                await utils.successful_embed(self.client.get_channel(self.log_channel), "Unban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
+                await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Unban Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
                 self.client.dispatch("command_successful", ctx)
                 break
 
@@ -125,7 +125,7 @@ class Moderator(commands.Cog):
         database_query = database.ModerationLogs.select().where(
             database.ModerationLogs.user_id == user.id)
 
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Warn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
+        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Warn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
         self.client.dispatch("command_successful", ctx)
 
         if len(database_query) >= 3:
@@ -149,25 +149,29 @@ class Moderator(commands.Cog):
             return
 
         database_query.get().delete_instance()
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Unwarn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
+        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Unwarn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
         self.client.dispatch("command_successful", ctx)
 
     @ commands.command(description="Removes a given users messages.")
     @ commands.has_permissions(kick_members=True, ban_members=True)
-    async def purge(self, ctx, user: discord.Member, amount: int):
+    async def purge(self, ctx, amount: int, user: discord.Member = None):
         """
-        purge (mention user here) (amount of text to remove)
+        purge (amount of text to remove) (mention user here *optional*) 
+
         """
 
-        await ctx.channel.purge(limit=amount, check=lambda message: message.author == user)
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Purge Results", user=user, moderator_id=ctx.author, details={"Details": f'Amount: `{amount}`'})
-        self.client.dispatch("command_successful", ctx)
+        if user:
+            await ctx.channel.purge(limit=amount, check=lambda message: message.author == user)
+            await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Purge Results", user=user, moderator=ctx.author, details={"Details": f'Amount: `{amount}`'})
+        else:
+            await ctx.channel.purge(limit=amount)
+            await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Purge Results", user=None, moderator=ctx.author, details={"Details": f'Amount: `{amount}`'})
 
     @ commands.command(description="Mutes a user for a specified amount of time.")
     @ commands.has_permissions(manage_messages=True)
-    async def mute(self, ctx, user: discord.Member, time: int, *, reason="No reason given."):
+    async def mute(self, ctx, user: discord.Member, time: str = "45m", *, reason="No reason given."):
         """
-        mute (mention user here) (how many minutes to mute) (reason)
+        mute (mention user here) (how long to mute {s, m, h, d}) (reason)
         """
         if user.guild_permissions.administrator:
             await utils.error_embed(ctx, "Command Permission Error!", {"Details": "`You cannot mute this member. They are an administrator.`"})
@@ -181,18 +185,17 @@ class Moderator(commands.Cog):
             return
 
         timestamp = datetime.now()
-        unmute_timestamp = timestamp + timedelta(minutes=time)
 
         current_time = timestamp.strftime(r'%m/%d, %H:%M')
-        unmute_time = unmute_timestamp.strftime(r'%m/%d, %H:%M')
+        unmute_time = utils.showFutureTime(time)
 
-        database.ModerationLogs.create(
+        database.MutedUser.create(
             username=user,
             user_id=user.id,
-            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="MUTE")
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="MUTE", time_muted=current_time, mute_time_release=unmute_time)
 
         await user.add_roles(muted_role)
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Mute Results", user, ctx.author, {"Details": f'Duration: `{time}m`'}, reason)
+        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Mute Results", user, ctx.author, {"Details": f'Duration: `{time}`'}, reason)
         self.client.dispatch("command_successful", ctx)
 
     @ commands.command(description="Unmutes a user.")
@@ -204,7 +207,7 @@ class Moderator(commands.Cog):
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         muted_user = database.MutedUser.select().where(
-            (database.MutedUser.username == user))
+            (database.MutedUser.user_id == user.id))
 
         if not muted_user:
             await utils.error_embed(ctx, "Unmuting Error!", {"Details": "`User is not muted!`"})
@@ -212,7 +215,7 @@ class Moderator(commands.Cog):
             return
 
         muted_user.get().delete_instance()
-        await utils.successful_embed(self.client.get_channel(self.log_channel), "Unmute Results", user=user, moderator_id=ctx.author, details={"Details": f'`{user} has been umuted`'})
+        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Unmute Results", user=user, moderator=ctx.author, details={"Details": f'`{user} has been umuted`'})
         await user.remove_roles(muted_role)
         self.client.dispatch("command_successful", ctx)
 
