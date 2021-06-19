@@ -41,12 +41,12 @@ class ModeratorData(commands.Cog):
 
                     pages.append(embed)
                 return pages
-            else:
-                return None
+
+            return None
 
         value = await get_pages()
 
-        if value == None:
+        if value is None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
             self.client.dispatch("command_failed", ctx)
             return
@@ -81,12 +81,12 @@ class ModeratorData(commands.Cog):
 
                     pages.append(embed)
                 return pages
-            else:
-                return None
+
+            return None
 
         value = await get_pages()
 
-        if value == None:
+        if value is None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
             self.client.dispatch("command_failed", ctx)
             return

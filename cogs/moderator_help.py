@@ -16,7 +16,7 @@ class Helper(commands.Cog):
     @commands.command(description="The help command.")
     async def help(self, ctx, command_name=None):
         # Find the help section of the requested command and if not found, say it doesn't exist.
-        if command_name != None:
+        if command_name is not None:
             requested_command = None
             for command in self.command_list:
                 if command_name == command.name:
@@ -41,7 +41,7 @@ class Helper(commands.Cog):
             for command in self.command_list:
                 command_dict[command.name] = f'`{command.description}`'
 
-            await utils.send_embed(ctx, f'Help', [command_dict], description='`Use #help (command) to get more information on a command.`')
+            await utils.send_embed(ctx, 'Help', [command_dict], description='`Use #help (command) to get more information on a command.`')
 
             self.client.dispatch("command_successful", ctx)
 

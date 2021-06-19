@@ -73,7 +73,6 @@ class BanUpdate(commands.Cog):
 
             sheet.insert_row(row, 2)  # Insert data, and boom. We done!
             break
-            print(row)
 
 
 def setup(bot):
