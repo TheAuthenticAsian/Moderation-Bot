@@ -9,7 +9,7 @@ class Helper(commands.Cog):
         self.client: commands.Bot = client
 
         # Sort the commands from least to greatest so it's more aesthetic
-        self.command_list = [command for command in self.client.commands]
+        self.command_list = list(self.client.commands)
         self.command_list.sort(reverse=True,
                                key=lambda x: -len(operator.attrgetter('description')(x)))
 
