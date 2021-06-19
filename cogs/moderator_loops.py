@@ -28,7 +28,7 @@ class Loops(commands.Cog):
                 guild_member = guild.get_member(user.user_id)
                 muted_role = discord.utils.get(guild.roles, name='Muted')
                 await guild_member.remove_roles(muted_role)
-                await utils.send_embed(self.client.get_channel(self.log_channel), "Unmute Results", [{"Details": f'{guild_member.mention} has been umuted'}])
+                await utils.successful_embed(self.client.get_channel(self.log_channel), "Unmute Results", guild_member, self.client.user, {"Details": f'{guild_member.mention} has been umuted'})
                 user.delete_instance()
 
     @unmute_loop.before_loop
