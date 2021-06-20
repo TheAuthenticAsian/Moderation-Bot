@@ -129,7 +129,8 @@ class Moderator(commands.Cog):
         self.client.dispatch("command_successful", ctx)
 
         if len(database_query) >= 3:
-            database_query.get().delete_instance()
+            for q in database_query:
+                q.delete_instance()
             await self.kick(ctx, user, reason="User has been warned three times.")
 
     @ commands.command(description="Unwarns the user and erases all the user's previous warnings.")
@@ -148,7 +149,8 @@ class Moderator(commands.Cog):
             self.client.dispatch("command_failed", ctx)
             return
 
-        database_query.get().delete_instance()
+        for q in database_query:
+            q.delete_instance()
         await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Unwarn Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
         self.client.dispatch("command_successful", ctx)
 

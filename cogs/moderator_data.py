@@ -47,7 +47,7 @@ class ModeratorData(commands.Cog):
         value = await get_pages()
 
         if value is None:
-            await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
+            await utils.error_embed(ctx, "Command Error!", {"Details": '`That case-id does not exist.`'})
             self.client.dispatch("command_failed", ctx)
             return
 

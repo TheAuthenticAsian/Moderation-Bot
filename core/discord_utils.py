@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from typing import List
 import discord
+from core import database
 
 
 async def send_embed(ctxs, name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description="", thumbnail=None):
@@ -47,11 +48,24 @@ async def successful_embed(ctx, name: str, user, moderator: str, details: dict, 
         await send_embed(ctx, name, [{"🚓 Moderator": moderator}, details])
         return
 
-    if not reason:
-        await send_embed(ctx, name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
-        return
+    user_data = database.ModerationLogs.select().where(
+        database.ModerationLogs.reason == reason)
+    case_id = None
+    if user_data.exists():
+        case_id = user_data[0].id
 
-    await send_embed(ctx, name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
+    if case_id:
+        if not reason:
+            await send_embed(ctx, name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details, {"Case-ID": case_id}], thumbnail=user.avatar_url)
+            return
+
+        await send_embed(ctx, name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details, {"Case-ID": case_id}], thumbnail=user.avatar_url)
+    else:
+        if not reason:
+            await send_embed(ctx, name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
+            return
+
+        await send_embed(ctx, name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
 
 
 async def error_embed(ctx, error_message: str, details: dict):
