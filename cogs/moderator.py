@@ -195,6 +195,10 @@ class Moderator(commands.Cog):
             username=user,
             user_id=user.id,
             moderator_id=ctx.author.id, date=date.today(), reason=reason, action="MUTE", time_muted=current_time, mute_time_release=unmute_time)
+        database.ModerationLogs.create(
+            username=user,
+            user_id=user.id,
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="MUTE")
 
         await user.add_roles(muted_role)
         await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Mute Results", user, ctx.author, {"Details": f'Duration: `{time}`'}, reason)
@@ -202,14 +206,18 @@ class Moderator(commands.Cog):
 
     @ commands.command(description="Unmutes a user.")
     @ commands.has_permissions(manage_messages=True)
-    async def unmute(self, ctx, user: discord.Member):
+    async def unmute(self, ctx, user: discord.Member, *, reason="No reason given."):
         """
-        unmute (mention user here)
+        unmute (mention user here) reason
         """
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         muted_user = database.MutedUser.select().where(
             (database.MutedUser.user_id == user.id))
+        database.ModerationLogs.create(
+            username=user,
+            user_id=user.id,
+            moderator_id=ctx.author.id, date=date.today(), reason=reason, action="UNMUTE")
 
         if not muted_user:
             await utils.error_embed(ctx, "Unmuting Error!", {"Details": "`User is not muted!`"})

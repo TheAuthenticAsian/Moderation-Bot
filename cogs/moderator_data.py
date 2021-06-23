@@ -15,11 +15,11 @@ class ModeratorData(commands.Cog):
         self.client: commands.Bot = client
 
     # Get list for the desired database
-    @commands.command(name='getdata', description='Returns all of the data in the requested database.')
+    @commands.command(name='search', description='Returns the data for a specific case id.')
     @commands.has_permissions(kick_members=True, ban_members=True)
-    async def get_data(self, ctx, case_number: int):
+    async def search(self, ctx, case_number: int):
         """
-        getdata (case_number)
+        search (case_number)
         """
 
         async def get_pages():
@@ -56,44 +56,38 @@ class ModeratorData(commands.Cog):
 
         self.client.dispatch("command_successful", ctx)
 
-    @commands.command(name='search', description='Returns all of the data in the database for a specific user.')
+    @commands.command(name='getdata', description='Returns all of the case_id data in the for the specified user.')
     @commands.has_permissions(kick_members=True, ban_members=True)
-    async def search(self, ctx, user: discord.Member):
+    async def getdata(self, ctx, user: discord.Member):
         """
-        search (mention user here)
+        getdata (mention user here)
         """
 
-        async def get_pages():
-            pages = []
-            # Generate a list of 5 embeds
-            query = database.ModerationLogs.select().where(
-                database.ModerationLogs.user_id == user.id)
+        query = database.ModerationLogs.select().where(
+            database.ModerationLogs.user_id == user.id)
 
-            if query.exists():
-                for q in query:
-                    modObj = await self.client.fetch_user(q.moderator_id)
-
-                    embed = discord.Embed(
-                        title="Query Results", description=f"Query requested by {ctx.author.mention}.\nSearch Query: {user.mention}")
-                    embed.add_field(
-                        name="Data", value=f"**User:** {q.username}\n**User ID:** {q.user_id}\n**\n**Moderator** {modObj.display_name}\n**Date:** {str(q.date)}\n**Action:** {q.action}\n**Reason:** {q.reason}\n**")
-                    embed.set_footer(text=f"Case ID: {q.id}")
-
-                    pages.append(embed)
-                return pages
-
-            return None
-
-        value = await get_pages()
-
-        if value is None:
+        if query is None:
             await utils.error_embed(ctx, "Command Error!", {"Details": '`There is no data available for this database table.`'})
             self.client.dispatch("command_failed", ctx)
             return
 
-        paginator = Paginator(pages=await get_pages())
-        await paginator.start(ctx)
+        send_value = []
 
+        for q in query:
+            modObj = await self.client.fetch_user(q.moderator_id)
+            send_value.append(
+                f"`Case Id:` **{q.id}** **[{q.action}]** `Date:` **{q.date}**")
+
+        send_value = "\n".join(send_value)
+
+        embed = discord.Embed(
+            title="Data Request")
+        embed.add_field(name="Data",
+                        value=send_value)
+        embed.set_footer(
+            text=f"Query requested by {ctx.author}.\nSearch Query: {user}")
+
+        await ctx.send(embed=embed)
         self.client.dispatch("command_successful", ctx)
 
 
