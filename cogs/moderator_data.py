@@ -76,7 +76,7 @@ class ModeratorData(commands.Cog):
         for q in query:
             modObj = await self.client.fetch_user(q.moderator_id)
             send_value.append(
-                f"`Case Id:` **{q.id}** **[{q.action}]** `Date:` **{q.date}**")
+                f"`**{q.id}**` **[{q.action}]** `**{q.date}**`")
 
         send_value = "\n".join(send_value)
 
