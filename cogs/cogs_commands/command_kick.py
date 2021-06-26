@@ -1,11 +1,8 @@
 import discord
 from discord.ext import commands
-from discord.ext import tasks
-from datetime import date, timedelta
-from datetime import datetime
+from datetime import date
 from core import database
-from core import discord_utils as utils
-from core.server_config import server_config
+from core.utils import embed_utils as utils
 
 
 class Kick(commands.Cog):
@@ -20,8 +17,9 @@ class Kick(commands.Cog):
         """
 
         if user.guild_permissions.administrator:
-            await utils.error_embed(ctx, "Command Permission Error!", {"Details": "`You cannot kick this member. They are an administrator.`"})
-            self.client.dispatch("command_failed", ctx)
+            error_embed = utils.error_embed(ctx, "Command Permission Error!", {
+                                            "Details": "`You cannot kick this member. They are an administrator.`"})
+            self.client.dispatch("command_failed", ctx, error_embed)
             return
 
         database.ModerationLogs.create(
@@ -30,8 +28,9 @@ class Kick(commands.Cog):
             moderator_id=ctx.author.id, date=date.today(), reason=reason, action="KICK")
 
         await user.kick(reason=reason)
-        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Kick Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
-        self.client.dispatch("command_successful", ctx)
+        successful_embed = utils.successful_embed([ctx, self.client.get_channel(
+            self.log_channel)], "Kick Results", user, ctx.author, {"Details": f'Date: `{date.today()}`'}, reason)
+        self.client.dispatch("command_successful", ctx, successful_embed)
 
 
 def setup(client):

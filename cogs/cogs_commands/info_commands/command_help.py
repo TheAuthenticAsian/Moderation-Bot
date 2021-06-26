@@ -1,7 +1,7 @@
 import operator
 import discord
 from discord.ext import commands
-from core import discord_utils as utils
+from core import embed_utils as utils
 
 
 class Helper(commands.Cog):
@@ -23,17 +23,18 @@ class Helper(commands.Cog):
                     requested_command = command
                     break
             if not requested_command:
-                await utils.error_embed(ctx, "Help Command Error!",
-                                        {"Details": "That command name does not exist. Use #help for the available commands."})
-                self.client.dispatch("command_failed", ctx)
+                error_embed = utils.error_embed(ctx, "Help Command Error!",
+                                                {"Details": "That command name does not exist. Use #help for the available commands."})
+                self.client.dispatch("command_failed", ctx, error_embed)
                 return
 
             command_index = self.command_list.index(requested_command)
             command = self.command_list[command_index]
 
-            await utils.send_embed(ctx, f'Command: "{command}"', [
+            help_embed = utils.send_embed(f'Command: "{command}"', [
                 {"Description": f'`{command.description}`'}, {'Usage': f'`{self.client.command_prefix}{command.help}`'}], discord.Colour.red())
-            self.client.dispatch("command_successful", ctx)
+            await ctx.send(embed=help_embed)
+            await ctx.message.add_reaction('✅')
 
         else:
             command_dict = {}
@@ -41,9 +42,12 @@ class Helper(commands.Cog):
             for command in self.command_list:
                 command_dict[command.name] = f'`{command.description}`'
 
-            await utils.send_embed(ctx, 'Help', [command_dict], description='`Use #help (command) to get more information on a command.`')
+            help_embed = utils.send_embed('Help', [
+                command_dict], description='`Use #help (command) to get more information on a command.`')
 
-            self.client.dispatch("command_successful", ctx)
+            await ctx.send(embed=help_embed)
+
+            await ctx.message.add_reaction('✅')
 
 
 def setup(client):

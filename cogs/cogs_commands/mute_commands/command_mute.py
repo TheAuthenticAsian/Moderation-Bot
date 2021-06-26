@@ -1,11 +1,10 @@
 import discord
 from discord.ext import commands
-from discord.ext import tasks
-from datetime import date, timedelta
+from datetime import date
 from datetime import datetime
 from core import database
-from core import discord_utils as utils
-from core.server_config import server_config
+from core.utils import embed_utils
+from core.utils import time_utils
 
 
 class Mute(commands.Cog):
@@ -19,20 +18,23 @@ class Mute(commands.Cog):
         mute (mention user here) (how long to mute {s, m, h, d}) (reason)
         """
         if user.guild_permissions.administrator:
-            await utils.error_embed(ctx, "Command Permission Error!", {"Details": "`You cannot mute this member. They are an administrator.`"})
-            self.client.dispatch("command_failed", ctx)
+            error_embed = embed_utils.error_embed(ctx, "Command Permission Error!", {
+                "Details": "`You cannot mute this member. They are an administrator.`"})
+            self.client.dispatch("command_failed", ctx, error_embed)
             return
+
         muted_role = discord.utils.get(ctx.guild.roles, name="Muted")
 
         if muted_role in user.roles:
-            await utils.error_embed(ctx, "Muting Error!", {"Details": "`This user is already muted.`"})
-            self.client.dispatch("command_failed", ctx)
+            error_embed = embed_utils.error_embed(
+                ctx, "Muting Error!", {"Details": "`This user is already muted.`"})
+            self.client.dispatch("command_failed", ctx, error_embed)
             return
 
         timestamp = datetime.now()
 
         current_time = timestamp.strftime(r'%m/%d, %H:%M')
-        unmute_time = utils.showFutureTime(time)
+        unmute_time = time_utils.showFutureTime(time)
 
         database.MutedUser.create(
             username=user,
@@ -44,8 +46,9 @@ class Mute(commands.Cog):
             moderator_id=ctx.author.id, date=date.today(), reason=reason, action="MUTE")
 
         await user.add_roles(muted_role)
-        await utils.successful_embed([ctx, self.client.get_channel(self.log_channel)], "Mute Results", user, ctx.author, {"Details": f'Duration: `{time}`'}, reason)
-        self.client.dispatch("command_successful", ctx)
+        successful_embed = embed_utils.successful_embed("Mute Results", user, ctx.author, {
+            "Details": f'Duration: `{time}`'}, reason)
+        self.client.dispatch("command_successful", ctx, successful_embed)
 
 
 def setup(client):

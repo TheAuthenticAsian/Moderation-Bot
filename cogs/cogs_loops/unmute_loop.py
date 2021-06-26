@@ -2,7 +2,7 @@ from discord.ext import commands
 import discord
 from core import database
 from datetime import datetime
-from core import discord_utils as utils
+from core.utils import embed_utils as utils
 from discord.ext import tasks
 from core.server_config import server_config
 
@@ -28,7 +28,10 @@ class UnMuteLoop(commands.Cog):
                 guild_member = guild.get_member(user.user_id)
                 muted_role = discord.utils.get(guild.roles, name='Muted')
                 await guild_member.remove_roles(muted_role)
-                await utils.successful_embed(self.client.get_channel(self.log_channel), "Unmute Results", guild_member, self.client.user, {"Details": f'{guild_member.mention} has been umuted'})
+                successful_embed = utils.successful_embed("Unmute Results", guild_member, self.client.user, {
+                                                          "Details": f'{guild_member.mention} has been umuted'})
+                self.client.get_channel(self.log_channel).send(
+                    embed=successful_embed)
                 user.delete_instance()
 
     @unmute_loop.before_loop
