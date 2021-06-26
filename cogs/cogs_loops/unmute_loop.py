@@ -7,7 +7,7 @@ from discord.ext import tasks
 from core.server_config import server_config
 
 
-class Loops(commands.Cog):
+class UnMuteLoop(commands.Cog):
     def __init__(self, client):
         self.client: commands.Bot = client
         self.guild_id = server_config["guild_id"]
@@ -37,4 +37,4 @@ class Loops(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(Loops(client))
+    client.add_cog(UnMuteLoop(client))

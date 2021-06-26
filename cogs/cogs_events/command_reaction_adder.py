@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 
-class CustomEvents(commands.Cog):
+class ReactionAdder(commands.Cog):
     def __init__(self, client):
         self.client = client
 
@@ -16,4 +16,4 @@ class CustomEvents(commands.Cog):
 
 
 def setup(client):
-    client.add_cog(CustomEvents(client))
+    client.add_cog(ReactionAdder(client))
