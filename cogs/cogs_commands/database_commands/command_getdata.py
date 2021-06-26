@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 from core.utils import embed_utils as utils
 from core import database
-from pygicord import Paginator
 
 
 # String template for getlist command. 0 = username, 1 = what happenend, 2 = person who did it, 3 = date, 4 = reason
