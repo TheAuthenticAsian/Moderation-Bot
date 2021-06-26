@@ -17,7 +17,7 @@ class Warn(commands.Cog):
         warn (mention user here) (reason)
         """
         if user.guild_permissions.administrator:
-            error_embed = utils.error_embed(ctx, "Command Permission Error!",
+            error_embed = utils.error_embed("Command Permission Error!",
                                             {"Details": "`You cannot warn this member. They are an administrator.`"})
             self.client.dispatch("command_failed", ctx, error_embed)
             return

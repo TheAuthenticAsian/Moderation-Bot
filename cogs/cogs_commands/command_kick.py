@@ -17,7 +17,7 @@ class Kick(commands.Cog):
         """
 
         if user.guild_permissions.administrator:
-            error_embed = utils.error_embed(ctx, "Command Permission Error!", {
+            error_embed = utils.error_embed("Command Permission Error!", {
                                             "Details": "`You cannot kick this member. They are an administrator.`"})
             self.client.dispatch("command_failed", ctx, error_embed)
             return

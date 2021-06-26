@@ -3,7 +3,7 @@ import database
 from typing import List
 
 
-def create_embed(name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description="", thumbnail=None):
+def create_base_embed(name: str, field_table: List[dict], color: discord.Colour = discord.Colour.blue(), description="", thumbnail=None):
     embed = discord.Embed(title=name, description=description, color=color)
 
     for field_dict in field_table:
@@ -21,7 +21,7 @@ def create_embed(name: str, field_table: List[dict], color: discord.Colour = dis
 
 def successful_embed(name: str, user, moderator: str, details: dict, reason=None):
     if not user:
-        return create_embed(name, [{"🚓 Moderator": moderator}, details])
+        return create_base_embed(name, [{"🚓 Moderator": moderator}, details])
 
     user_data = database.ModerationLogs.select().where(
         database.ModerationLogs.reason == reason)
@@ -31,15 +31,15 @@ def successful_embed(name: str, user, moderator: str, details: dict, reason=None
 
     if case_id:
         if not reason:
-            return create_embed(name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details, {"Case-ID": case_id}], thumbnail=user.avatar_url)
+            return create_base_embed(name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details, {"Case-ID": case_id}], thumbnail=user.avatar_url)
 
-        return create_embed(name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details, {"Case-ID": case_id}], thumbnail=user.avatar_url)
+        return create_base_embed(name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details, {"Case-ID": case_id}], thumbnail=user.avatar_url)
 
     if not reason:
-        return create_embed(name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
+        return create_base_embed(name, [{"👤 User": user}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
 
-    return create_embed(name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
+    return create_base_embed(name, [{"👤 User": user}, {"📝 Reason": reason}, {"🚓 Moderator": moderator}, details], thumbnail=user.avatar_url)
 
 
 def error_embed(error_message: str, details: dict):
-    return create_embed(error_message, [details], color=discord.Colour.red())
+    return create_base_embed(error_message, [details], color=discord.Colour.red())

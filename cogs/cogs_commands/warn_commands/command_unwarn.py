@@ -20,7 +20,7 @@ class UnWarn(commands.Cog):
             database.ModerationLogs.user_id == user.id)
 
         if not database_query:
-            error_embed = utils.error_embed(ctx, "Search Error!",
+            error_embed = utils.error_embed("Search Error!",
                                             {"Details": f'`{user} has not been warned before.`'})
             self.client.dispatch("command_failed", ctx, error_embed)
             return

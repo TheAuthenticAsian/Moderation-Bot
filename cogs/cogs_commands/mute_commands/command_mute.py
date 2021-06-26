@@ -18,7 +18,7 @@ class Mute(commands.Cog):
         mute (mention user here) (how long to mute {s, m, h, d}) (reason)
         """
         if user.guild_permissions.administrator:
-            error_embed = embed_utils.error_embed(ctx, "Command Permission Error!", {
+            error_embed = embed_utils.error_embed("Command Permission Error!", {
                 "Details": "`You cannot mute this member. They are an administrator.`"})
             self.client.dispatch("command_failed", ctx, error_embed)
             return

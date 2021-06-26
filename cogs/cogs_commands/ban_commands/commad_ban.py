@@ -17,7 +17,7 @@ class Ban(commands.Cog):
         """
 
         if user.guild_permissions.administrator:
-            error_embed = utils.error_embed(ctx, "Command Permission Error!",
+            error_embed = utils.error_embed("Command Permission Error!",
                                             {"Details": "`You cannot ban this member. They are an administrator.`"})
             self.client.dispatch("command_failed", ctx, error_embed)
             return
@@ -26,7 +26,7 @@ class Ban(commands.Cog):
             database.ModerationLogs.user_id == user.id)
 
         if database_query:
-            error_embed = utils.error_embed(ctx, "Command Error!",
+            error_embed = utils.error_embed("Command Error!",
                                             {"Details": f"`{user} is already banned.`"})
             self.client.dispatch("command_failed", ctx, error_embed)
             return

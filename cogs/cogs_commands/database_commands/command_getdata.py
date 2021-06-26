@@ -24,7 +24,7 @@ class GetData(commands.Cog):
             database.ModerationLogs.user_id == user.id)
 
         if query is None:
-            error_embed = utils.error_embed(ctx, "Command Error!", {
+            error_embed = utils.error_embed("Command Error!", {
                                             "Details": '`There is no data available for this database table.`'})
             self.client.dispatch("command_failed", ctx, error_embed)
             return

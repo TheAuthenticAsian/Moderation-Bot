@@ -11,7 +11,7 @@ class Ping(commands.Cog):
         """
         ping
         """
-        embed = utils.send_embed(
+        embed = utils.create_base_embed(
             "Latency ⌛", [{"Current Ping": f'{round(self.client.latency * 1000)}ms'}])
         await ctx.send(embed=embed)
         await ctx.message.add_reaction('✅')

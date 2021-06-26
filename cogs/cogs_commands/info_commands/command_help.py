@@ -23,7 +23,7 @@ class Helper(commands.Cog):
                     requested_command = command
                     break
             if not requested_command:
-                error_embed = utils.error_embed(ctx, "Help Command Error!",
+                error_embed = utils.error_embed("Help Command Error!",
                                                 {"Details": "That command name does not exist. Use #help for the available commands."})
                 self.client.dispatch("command_failed", ctx, error_embed)
                 return
@@ -31,7 +31,7 @@ class Helper(commands.Cog):
             command_index = self.command_list.index(requested_command)
             command = self.command_list[command_index]
 
-            help_embed = utils.send_embed(f'Command: "{command}"', [
+            help_embed = utils.create_base_embed(f'Command: "{command}"', [
                 {"Description": f'`{command.description}`'}, {'Usage': f'`{self.client.command_prefix}{command.help}`'}], discord.Colour.red())
             await ctx.send(embed=help_embed)
             await ctx.message.add_reaction('✅')
@@ -42,7 +42,7 @@ class Helper(commands.Cog):
             for command in self.command_list:
                 command_dict[command.name] = f'`{command.description}`'
 
-            help_embed = utils.send_embed('Help', [
+            help_embed = utils.create_base_embed('Help', [
                 command_dict], description='`Use #help (command) to get more information on a command.`')
 
             await ctx.send(embed=help_embed)

@@ -26,7 +26,7 @@ class UnMute(commands.Cog):
             moderator_id=ctx.author.id, date=date.today(), reason=reason, action="UNMUTE")
 
         if not muted_user:
-            error_embed = embed_utils.error_embed(ctx, "Unmuting Error!", {
+            error_embed = embed_utils.error_embed("Unmuting Error!", {
                 "Details": "`User is not muted!`"})
             self.client.dispatch("command_failed", ctx, error_embed)
             return
